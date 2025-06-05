@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeadSerpent | Search Results</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --emerald: #2e8b57;
+      --emerald-dark: #1e5631;
+      --emerald-light: #4ccb7f;
+      --gold: #d4af37;
+      --silver: #c0c0c0;
+      --slate: #2f4f4f;
+      --ivory: #fffff0;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--slate);
+      line-height: 1.6;
+      background-color: #f8f9fa;
+    }
+    
+    h1, h2, h3, .display-font {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
+      color: white;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    .dataTables_wrapper {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+      margin-top: 1rem;
+    }
+    
+    .highlight-row {
+      background-color: rgba(212, 175, 55, 0.1) !important; /* Gold with opacity */
+      position: relative;
+    }
+    
+    .highlight-row::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background-color: var(--gold);
+    }
+    
+    .verified-email {
+      color: var(--emerald);
+      font-weight: 500;
+    }
+    
+    .verified-badge {
+      background-color: var(--emerald);
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: 5px;
+    }
+    
+    .progress-loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background-color: #f3f3f3;
+      z-index: 9999;
+    }
+    
+    .progress-bar-animated {
+      height: 100%;
+      width: 0;
+      background-color: var(--emerald);
+      animation: progress 2s ease-in-out infinite;
+      background-size: 200% 100%;
+      background-image: linear-gradient(to right, var(--emerald), var(--emerald-dark), var(--emerald));
+    }
+    
+    @keyframes progress {
+      0% { width: 0; background-position: 0% 50%; }
+      50% { width: 70%; background-position: 100% 50%; }
+      100% { width: 100%; background-position: 0% 50%; }
+    }
+    
+    .action-btn {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .copy-notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--emerald);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+    }
+    
+    .marker-btn {
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--slate);
+    }
+    
+    .marker-btn.marked {
+      color: var(--gold);
+    }
+    
+    .marker-btn:hover {
+      transform: scale(1.2);
+    }
+    
+    .table th {
+      white-space: nowrap;
+      background-color: var(--emerald-dark);
+      color: white;
+    }
+    
+    .btn-primary {
+      background-color: var(--emerald);
+      border: none;
+      font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--emerald-dark);
+    }
+    
+    .btn-light {
+      background-color: var(--ivory);
+      color: var(--slate);
+    }
+    
+    .dropdown-menu {
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .dropdown-item:hover {
+      background-color: rgba(46, 139, 87, 0.1);
+    }
+    
+    .alert {
+      border-radius: 10px;
+    }
+    
+    .alert-info {
+      background-color: rgba(46, 139, 87, 0.1);
+      border-color: rgba(46, 139, 87, 0.2);
+      color: var(--emerald-dark);
+    }
+    
+    .alert-danger {
+      background-color: rgba(220, 53, 69, 0.1);
+      border-color: rgba(220, 53, 69, 0.2);
+      color: #dc3545;
+    }
+    
+    .text-warning {
+      color: var(--gold) !important;
+    }
+    
+    .progress-bar {
+      background-color: var(--emerald);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .sticky-header {
+        padding: 1rem;
+      }
+      
+      .sticky-header h4 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Progress Loader -->
+  <div class="progress-loader" id="progressLoader">
+    <div class="progress-bar-animated"></div>
+  </div>
+
+  <!-- Copy Notification -->
+  <div class="copy-notification" id="copyNotification">
+    Copied to clipboard!
+  </div>
+
+  <div class="container-fluid p-0">
+    <!-- Sticky Header -->
+    <div class="sticky-header">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Leads for <%= keyword %> in <%= location %></h4>
+          <div>
+            <a href="/" class="btn btn-sm btn-light me-2">
+              <i class="bi bi-arrow-left"></i> New Search
+            </a>
+            <div class="btn-group">
+              <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-download"></i> Export
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="downloadCSV()">CSV File</a></li>
+                <li><a class="dropdown-item" href="#" onclick="downloadExcel()">Excel File</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container py-4">
+      <% if (error) { %>
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <% if (results.length === 0 && !error) { %>
+        <div class="alert alert-info" role="alert">
+          <i class="bi bi-info-circle-fill"></i> No leads found for <%= keyword %> in <%= location %>. Try different search terms.
+        </div>
+      <% } %>
+
+      <% if (results.length > 0) { %>
+        <div class="table-responsive">
+          <table id="leadsTable" class="table table-hover" style="width:100%">
+            <thead>
+              <tr>
+                <th></th> <!-- Marker column -->
+                <th>Business</th>
+                <th>Contact Info</th>
+                <th>Rating</th>
+                <th>Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% results.forEach((clinic, index) => { %>
+                <tr id="row-<%= index %>">
+                  <td>
+                    <i class="bi bi-bookmark marker-btn" onclick="toggleMark(this, <%= index %>)"></i>
+                  </td>
+                  <td>
+                    <strong><%= clinic.name %></strong><br>
+                    <small class="text-muted"><%= clinic.address %></small>
+                  </td>
+                  <td>
+                    <% if (clinic.phone) { %>
+                      <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-telephone me-2"></i>
+                        <span><%= clinic.phone %></span>
+                        <i class="bi bi-clipboard action-btn ms-2" 
+                           onclick="copyToClipboard('<%= clinic.phone %>', 'Phone number')"></i>
+                      </div>
+                    <% } %>
+                    <% if (clinic.email) { %>
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-envelope me-2"></i>
+                        <span class="<%= clinic.emailVerified ? 'verified-email' : '' %>">
+                          <%= clinic.email %>
+                          <% if (clinic.emailVerified) { %>
+                            <span class="verified-badge">Verified</span>
+                          <% } %>
+                        </span>
+                        <i class="bi bi-clipboard action-btn ms-2" 
+                           onclick="copyToClipboard('<%= clinic.email %>', 'Email')"></i>
+                      </div>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (clinic.rating) { %>
+                      <div class="d-flex align-items-center">
+                        <span class="text-warning me-1">
+                          <%= '★'.repeat(Math.round(clinic.rating)) %><%= '☆'.repeat(5 - Math.round(clinic.rating)) %>
+                        </span>
+                        <span class="text-muted"><%= clinic.rating %></span>
+                        <% if (clinic.reviews) { %>
+                          <small class="text-muted ms-1">(<%= clinic.reviews %>)</small>
+                        <% } %>
+                      </div>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+<td>
+  <div class="progress" style="height: 20px;">
+    <div class="progress-bar" 
+         role="progressbar" 
+         style="width: <%= clinic.score %>%"
+         aria-valuenow="<%= clinic.score %>" 
+         aria-valuemin="0" 
+         aria-valuemax="100">
+      <%= clinic.score %>%
+    </div>
+  </div>
+  
+  <% if (clinic.lead_category) { %>
+    <small class="ms-2 badge 
+      <%= clinic.lead_category === 'Hot' ? 'bg-danger' : 
+           clinic.lead_category === 'Warm' ? 'bg-warning text-dark' : 
+           'bg-secondary' %>" 
+      title="Lead Category: <%= clinic.lead_category %>">
+      <%= clinic.lead_category %>
+    </small>
+  <% } %>
+</td>
+
+                  <td>
+                    <div class="d-flex">
+                      <% if (clinic.website) { %>
+                        <a href="<%= clinic.website %>" target="_blank" class="btn btn-sm btn-outline-primary me-1" title="Visit Website">
+                          <i class="bi bi-globe"></i>
+                        </a>
+                      <% } %>
+                      <% if (clinic.phone) { %>
+                        <button class="btn btn-sm btn-outline-primary me-1" title="Copy Phone" onclick="copyToClipboard('<%= clinic.phone %>', 'Phone number')">
+                          <i class="bi bi-telephone"></i>
+                        </button>
+                      <% } %>
+                      <% if (clinic.email) { %>
+                        <button class="btn btn-sm btn-outline-primary" title="Copy Email" onclick="copyToClipboard('<%= clinic.email %>', 'Email')">
+                          <i class="bi bi-envelope"></i>
+                        </button>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- JavaScript Libraries -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+
+  <script>
+    // Track marked items
+    let markedItems = JSON.parse(localStorage.getItem('markedLeads') || '{}');
+
+    // Show loader when page is loading
+    document.addEventListener('DOMContentLoaded', function() {
+      const loader = document.getElementById('progressLoader');
+      loader.style.display = 'block';
+      
+      // Apply saved marks
+      Object.keys(markedItems).forEach(rowId => {
+        const row = document.getElementById(rowId);
+        if (row) {
+          const marker = row.querySelector('.marker-btn');
+          if (marker) {
+            marker.classList.add('marked', 'bi-bookmark-fill');
+            marker.classList.remove('bi-bookmark');
+            row.classList.add('highlight-row');
+          }
+        }
+      });
+    });
+
+    // Initialize DataTable with ascending sort by score
+    $(document).ready(function() {
+      $('#leadsTable').DataTable({
+        order: [[4, 'asc']], // Sort by score (column 4) ascending
+        responsive: true,
+        columnDefs: [
+          { orderable: false, targets: [0, 5] }, // Disable sorting for marker and actions columns
+          { searchable: false, targets: [0, 4, 5] } // Disable searching for these columns
+        ],
+        language: {
+          search: "_INPUT_",
+          searchPlaceholder: "Search leads...",
+          lengthMenu: "Show _MENU_ leads per page",
+          info: "Showing _START_ to _END_ of _TOTAL_ leads",
+          infoEmpty: "No leads available",
+          infoFiltered: "(filtered from _MAX_ total leads)"
+        },
+        initComplete: function() {
+          document.getElementById('progressLoader').style.display = 'none';
+        }
+      });
+    });
+
+    // Toggle mark on a row
+    function toggleMark(element, rowIndex) {
+      const rowId = `row-${rowIndex}`;
+      
+      // Toggle visual state
+      element.classList.toggle('marked');
+      element.classList.toggle('bi-bookmark');
+      element.classList.toggle('bi-bookmark-fill');
+      
+      // Toggle row highlight
+      const row = document.getElementById(rowId);
+      row.classList.toggle('highlight-row');
+      
+      // Update storage
+      if (markedItems[rowId]) {
+        delete markedItems[rowId];
+      } else {
+        markedItems[rowId] = true;
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('markedLeads', JSON.stringify(markedItems));
+    }
+
+    // Copy to clipboard function
+    function copyToClipboard(text, type) {
+      navigator.clipboard.writeText(text).then(function() {
+        const notification = document.getElementById('copyNotification');
+        notification.textContent = `${type} copied to clipboard!`;
+        notification.style.display = 'block';
+        
+        setTimeout(function() {
+          notification.style.display = 'none';
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy to clipboard. Please try again.');
+      });
+    }
+
+    // Download as CSV
+    function downloadCSV() {
+      try {
+        const results = <%- JSON.stringify(results || []) %>;
+        
+        if (results.length === 0) {
+          alert('No data available to download');
+          return;
+        }
+
+        const escapeCsv = field => {
+          if (field === null || field === undefined) return '';
+          return `"${String(field).replace(/"/g, '""')}"`;
+        };
+
+        const headers = [
+          'Name', 'Address', 'Phone', 'Website', 'Email', 
+          'Rating', 'Reviews', 'Score', 'Email Verified'
+        ].map(escapeCsv).join(',');
+
+        const rows = results.map(clinic => [
+          clinic.name,
+          clinic.address,
+          clinic.phone,
+          clinic.website,
+          clinic.email,
+          clinic.rating || '',
+          clinic.reviews || '',
+          clinic.score,
+          clinic.emailVerified ? 'Yes' : 'No'
+        ].map(escapeCsv).join(','));
+
+        const csvContent = [headers, ...rows].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `leads_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Download failed:', error);
+        alert('Error generating CSV. Please try again.');
+      }
+    }
+
+    // Download as Excel
+    function downloadExcel() {
+      try {
+        const results = <%- JSON.stringify(results || []) %>;
+        
+        if (results.length === 0) {
+          alert('No data available to download');
+          return;
+        }
+
+        const data = [
+          ['Name', 'Address', 'Phone', 'Website', 'Email', 'Rating', 'Reviews', 'Score', 'Email Verified'],
+          ...results.map(clinic => [
+            clinic.name,
+            clinic.address,
+            clinic.phone || '',
+            clinic.website || '',
+            clinic.email || '',
+            clinic.rating || '',
+            clinic.reviews || '',
+            clinic.score,
+            clinic.emailVerified ? 'Yes' : 'No'
+          ])
+        ];
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, "Leads");
+        XLSX.writeFile(wb, `leads_${new Date().toISOString().slice(0,10)}.xlsx`);
+      } catch (error) {
+        console.error('Download failed:', error);
+        alert('Error generating Excel file. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html>

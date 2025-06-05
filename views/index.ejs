@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeadSerpent | Business Lead Scraper</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --emerald: #2e8b57;
+      --emerald-dark: #1e5631;
+      --emerald-light: #4ccb7f;
+      --gold: #d4af37;
+      --silver: #c0c0c0;
+      --slate: #2f4f4f;
+      --ivory: #fffff0;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--slate);
+      line-height: 1.6;
+      background-color: #f8f9fa;
+    }
+    
+    h1, h2, h3, .display-font {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+    }
+    
+    .hero {
+      background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
+      color: white;
+      padding: 6rem 0 8rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(46, 139, 87, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(30, 86, 49, 0.3) 0%, transparent 50%);
+    }
+    
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .hero p {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto 3rem;
+    }
+    
+    .search-form {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+      max-width: 900px;
+      margin: -4rem auto 0;
+      position: relative;
+      z-index: 10;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .form-group {
+      margin-bottom: 1.8rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+      color: var(--slate);
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      transition: all 0.3s;
+    }
+    
+    input[type="text"]:focus {
+      border-color: var(--emerald-light);
+      box-shadow: 0 0 0 4px rgba(46, 139, 87, 0.2);
+      outline: none;
+    }
+    
+    .btn-primary {
+      background-color: var(--emerald);
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--emerald-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(30, 86, 49, 0.3);
+    }
+    
+    .section {
+      padding: 6rem 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 4rem;
+      color: var(--emerald-dark);
+      position: relative;
+    }
+    
+    .section-title::after {
+      content: "";
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: var(--gold);
+      margin: 1.5rem auto 0;
+      border-radius: 2px;
+    }
+    
+    /* Horizontal Feature Cards */
+    .features-horizontal {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      margin-bottom: 3rem;
+    }
+    
+    .feature-row {
+      display: flex;
+      align-items: center;
+      padding: 2rem;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      transition: all 0.3s;
+    }
+    
+    .feature-row:last-child {
+      border-bottom: none;
+    }
+    
+    .feature-row:hover {
+      background: rgba(46, 139, 87, 0.03);
+      transform: translateX(10px);
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      color: var(--emerald);
+      min-width: 80px;
+      text-align: center;
+      margin-right: 2rem;
+    }
+    
+    .feature-content h3 {
+      color: var(--emerald-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Side-by-side Sections */
+    .side-by-side {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    
+    .side-section {
+      flex: 1;
+      min-width: 300px;
+      padding: 0 1.5rem;
+    }
+    
+    /* Popular Search Bubbles */
+    .search-bubble {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 50px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: all 0.3s;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .search-bubble:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .search-text {
+      flex-grow: 1;
+      font-weight: 500;
+    }
+    
+    .search-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--emerald);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .search-bubble:hover .search-icon {
+      background: var(--emerald-dark);
+      transform: rotate(15deg);
+    }
+    
+    /* How It Works */
+    .step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 2.5rem;
+    }
+    
+    .step-number {
+      background: var(--emerald);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-right: 1.5rem;
+      flex-shrink: 0;
+    }
+    
+    .step-content h3 {
+      color: var(--emerald-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
+      color: white;
+      padding: 6rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cta-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(255, 255, 240, 0.1) 0%, transparent 50%);
+    }
+    
+    .cta-title {
+      font-size: 2.8rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .cta-btn {
+      background-color: var(--gold);
+      color: var(--slate);
+      font-weight: 700;
+      padding: 16px 40px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+      display: inline-block;
+      border: none;
+      letter-spacing: 0.5px;
+    }
+    
+    .cta-btn:hover {
+      background-color: var(--ivory);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      color: var(--emerald-dark);
+    }
+    
+    /* Loading Buffer */
+    .loading-quote {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(30, 86, 49, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      color: white;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    
+    .loading-quote.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .quote-text {
+      font-size: 1.8rem;
+      max-width: 700px;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-style: italic;
+      line-height: 1.5;
+      font-family: 'Playfair Display', serif;
+    }
+    
+    .quote-author {
+      font-weight: 600;
+      color: var(--gold);
+    }
+    
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 5px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: var(--gold);
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 3rem;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .side-by-side {
+        flex-direction: column;
+      }
+      
+      .side-section {
+        margin-bottom: 3rem;
+      }
+      
+      .feature-row {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .feature-icon {
+        margin-right: 0;
+        margin-bottom: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero {
+        padding: 4rem 0 6rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .section {
+        padding: 4rem 0;
+      }
+      
+      .search-form {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero text-center">
+    <div class="container">
+      <h1 class="display-font">Unleash Your Business Potential</h1>
+      <p>Discover high-quality leads with our precision scraping technology and intelligent scoring system</p>
+    </div>
+  </section>
+
+  <!-- Search Form -->
+  <div class="container">
+    <form action="/scrape" method="POST" id="searchForm" class="search-form">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="keyword">What business are you looking for?</label>
+            <input
+              type="text"
+              id="keyword"
+              name="keyword"
+              placeholder="e.g., Dental Clinic"
+              required
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="location">Where?</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder="e.g., Bangalore"
+              required
+              autocomplete="off"
+            />
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <span id="btnText">Find Leads Now</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Why Use This Tool - Horizontal Cards -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Why LeadSerpent Stands Out</h2>
+      
+      <div class="features-horizontal">
+        <div class="feature-row">
+          <div class="feature-icon">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+          <div class="feature-content">
+            <h3>Precision Data Collection</h3>
+            <p>We verify every piece of contact information to ensure you're only working with accurate, up-to-date leads.</p>
+          </div>
+        </div>
+        
+        <div class="feature-row">
+          <div class="feature-icon">
+            <i class="bi bi-bar-chart-line-fill"></i>
+          </div>
+          <div class="feature-content">
+            <h3>Intelligent Lead Scoring</h3>
+            <p>Our algorithm evaluates each lead's potential so you can focus on the hottest opportunities first.</p>
+          </div>
+        </div>
+        
+        <div class="feature-row">
+          <div class="feature-icon">
+            <i class="bi bi-lightning-charge-fill"></i>
+          </div>
+          <div class="feature-content">
+            <h3>Lightning Fast Results</h3>
+            <p>Get hundreds of qualified leads in seconds, not hours or days like traditional methods.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Side-by-Side Sections -->
+  <section class="section bg-light">
+    <div class="container">
+      <div class="side-by-side">
+        <!-- Popular Searches -->
+        <div class="side-section">
+          <h2 class="mb-4" style="color: var(--emerald-dark);">Popular Searches</h2>
+          
+          <div class="search-bubble" onclick="setSearch('Dental Clinic', 'Bangalore')">
+            <div class="search-text">Dental Clinics in Bangalore</div>
+            <div class="search-icon">
+              <i class="bi bi-search"></i>
+            </div>
+          </div>
+          
+          <div class="search-bubble" onclick="setSearch('Law Firm', 'Delhi')">
+            <div class="search-text">Law Firms in Delhi</div>
+            <div class="search-icon">
+              <i class="bi bi-search"></i>
+            </div>
+          </div>
+          
+          <div class="search-bubble" onclick="setSearch('Cafe', 'Hyderabad')">
+            <div class="search-text">Cafés in Hyderabad</div>
+            <div class="search-icon">
+              <i class="bi bi-search"></i>
+            </div>
+          </div>
+          
+          <div class="search-bubble" onclick="setSearch('GYM', 'Mumbai')">
+            <div class="search-text">Gyms in Mumbai</div>
+            <div class="search-icon">
+              <i class="bi bi-search"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- How It Works -->
+        <div class="side-section">
+          <h2 class="mb-4" style="color: var(--emerald-dark);">How It Works</h2>
+          
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Define Your Target</h3>
+              <p>Enter the business type and location you want to find leads for.</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Let Us Work Our Magic</h3>
+              <p>Our system scours multiple sources to find and verify leads.</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Download & Connect</h3>
+              <p>Export your leads and start building valuable business relationships.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="cta-title display-font">Ready to Transform Your Lead Generation?</h2>
+      <p class="mb-4" style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Join thousands of businesses scaling their growth with LeadSerpent</p>
+      <!--<a href="#searchForm" class="cta-btn">Try For Free</a>-->
+    </div>
+  </section>
+
+  <!-- Loading Buffer with Quotes -->
+  <div class="loading-quote" id="loadingQuote">
+    <div class="spinner"></div>
+    <div class="quote-text" id="quoteText">"The secret of getting ahead is getting started."</div>
+    <div class="quote-author" id="quoteAuthor">- Mark Twain</div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Business quotes for loading screen
+    const quotes = [
+      {
+        text: "The secret of getting ahead is getting started.",
+        author: "Mark Twain"
+      },
+      {
+        text: "Opportunities don't happen. You create them.",
+        author: "Chris Grosser"
+      },
+      {
+        text: "Every contact is a potential golden opportunity.",
+        author: ""
+      },
+      {
+        text: "Success is where preparation and opportunity meet.",
+        author: "Bobby Unser"
+      },
+      {
+        text: "The fortune is in the follow-up.",
+        author: "Grant Cardone"
+      },
+      {
+        text: "Your network is your net worth.",
+        author: "Porter Gale"
+      }
+    ];
+    
+    // Set popular search
+    function setSearch(keyword, location) {
+      document.getElementById('keyword').value = keyword;
+      document.getElementById('location').value = location;
+      document.getElementById('searchForm').scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+      document.getElementById('keyword').focus();
+    }
+    
+    document.querySelector('.cta-btn[href="#searchForm"]')?.addEventListener('click', function (e) {
+  e.preventDefault();
+  const form = document.getElementById("searchForm");
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+  form.querySelector("input")?.focus();
+});
+
+    // Show random quote during loading
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      const btn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const loadingQuote = document.getElementById('loadingQuote');
+      
+      // Disable button and show loading state
+      btn.disabled = true;
+      btnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Finding Leads...';
+      
+      // Show loading quote
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById('quoteText').textContent = randomQuote.text;
+      document.getElementById('quoteAuthor').textContent = randomQuote.author ? `- ${randomQuote.author}` : '';
+      loadingQuote.classList.add('show');
+      
+      // In a real app, this would be when the form actually submits
+      // For demo purposes, we'll hide after 3 seconds
+
+    });
+  </script>
+</body>
+</html>
